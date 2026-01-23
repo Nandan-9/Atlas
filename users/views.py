@@ -1,7 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import User
+from .models import User,Teams
 
 @csrf_exempt
 def users_view(request):
@@ -25,3 +25,30 @@ def users_view(request):
             "id", "username", "email_id", "role"
         )
         return JsonResponse(list(users), safe=False)
+
+
+@csrf_exempt
+def create_team(request):
+
+    print("dsdssds")
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+        team_lead =  User.objects.get(id=data["id"])
+        team = Teams.objects.create(
+            name = data["name"],
+            team_lead = team_lead
+        )
+        return JsonResponse({
+            "id": team.id,
+            "message": "Team created successfully"
+        }, status=201)
+    
+    if request.method == "GET":
+
+        team = Teams.objects.all().values(
+            "id","name","team_lead"
+        )
+        return JsonResponse(list(team),safe=False)
+
+

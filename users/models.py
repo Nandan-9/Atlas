@@ -25,3 +25,11 @@ class User(models.Model):
 
 
 
+class Teams(models.Model):
+    name = models.CharField(max_length=100)
+    team_lead = models.ForeignKey(User,on_delete=models.SET_NULL,null=True, related_name="leading_teams")
+
+
+    def __str__(self):
+        return self.name
+
