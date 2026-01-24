@@ -1,7 +1,19 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import User,Teams
+from .models import User,Teams,GitHubAccount
+
+
+from django.shortcuts import redirect
+import urllib.parse
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+
 
 @csrf_exempt
 def users_view(request):
@@ -52,12 +64,50 @@ def create_team(request):
         return JsonResponse(list(team),safe=False)
 
 
+
+
+
+
+import requests
+
+
+
 @csrf_exempt
+
 def github_auth(request):
+    params = {
+        "client_id": GITHUB_CLIENT_ID,
+        "redirect_uri": "http://localhost:8000/users/github/callback/",
+        "scope": "repo workflow read:org",
+    }
 
-    if request.method == "POST":
+    url = "https://github.com/login/oauth/authorize?" + urllib.parse.urlencode(params)
+    return JsonResponse({"auth_url": url})
 
-        content = "hait there "
-        return JsonResponse({
-            "message" : content
-        })
+def github_callback(request):
+    code = request.GET.get("code")
+
+    if not code:
+        return JsonResponse({"error": "No code received"}, status=400)
+
+    token_res = requests.post(
+        "https://github.com/login/oauth/access_token",
+        headers={"Accept": "application/json"},
+        data={
+            "client_id": GITHUB_CLIENT_ID,
+            "client_secret": GITHUB_CLIENT_SECRET,
+            "code": code,
+        },
+    )
+
+    data = token_res.json()
+    access_token = data.get("access_token")
+
+    if not access_token:
+        return JsonResponse({"error": "Token exchange failed", "details": data}, status=400)
+
+    # TEMP: store globally (MVP only)
+    with open("github_token.txt", "w") as f:
+        f.write(access_token)
+
+    return JsonResponse({"status": "GitHub connected successfully"})

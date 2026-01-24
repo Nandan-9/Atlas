@@ -55,3 +55,4 @@ htmlcov/
 .idea/
 .vscode/
 *.swp
+github_token.txt

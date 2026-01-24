@@ -49,6 +49,15 @@
 </div>
 
 <script>
+    function isValidUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     async function connectGithub() {
         const userId = document.getElementById("userId").value;
         const responseBox = document.getElementById("response");
@@ -56,24 +65,15 @@
         responseBox.textContent = "Loading...";
 
         try {
-            const res = await fetch("http://127.0.0.1:8000/users/github/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    id: userId
-                })
+            fetch("http://127.0.0.1:8000/users/github/")
+            .then(res => res.json())
+            .then(data => {
+                window.location.href = data.auth_url; // ✅ redirect, not fetch
             });
-
-            const data = await res.json();
-            responseBox.textContent = JSON.stringify(data, null, 2);
+            
 
         } catch (error) {
             responseBox.textContent = "Error: " + error.message;
         }
     }
 </script>
-
-</body>
-</html>
