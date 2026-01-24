@@ -42,7 +42,7 @@ def create_team(request):
         return JsonResponse({
             "id": team.id,
             "message": "Team created successfully"
-        }, status=201)
+        }, status=201) 
     
     if request.method == "GET":
 
@@ -52,3 +52,12 @@ def create_team(request):
         return JsonResponse(list(team),safe=False)
 
 
+@csrf_exempt
+def github_auth(request):
+
+    if request.method == "POST":
+
+        content = "hait there "
+        return JsonResponse({
+            "message" : content
+        })

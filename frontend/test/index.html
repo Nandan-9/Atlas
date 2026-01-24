@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>GitHub Connect Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 40px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            cursor: pointer;
+        }
+        pre {
+            margin-top: 15px;
+            background: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>GitHub Connect Test</h2>
+
+    <label>User ID</label>
+    <input type="text" id="userId" placeholder="Enter user id" />
+
+    <button onclick="connectGithub()">Connect GitHub</button>
+
+    <pre id="response"></pre>
+</div>
+
+<script>
+    async function connectGithub() {
+        const userId = document.getElementById("userId").value;
+        const responseBox = document.getElementById("response");
+
+        responseBox.textContent = "Loading...";
+
+        try {
+            const res = await fetch("http://127.0.0.1:8000/users/github/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: userId
+                })
+            });
+
+            const data = await res.json();
+            responseBox.textContent = JSON.stringify(data, null, 2);
+
+        } catch (error) {
+            responseBox.textContent = "Error: " + error.message;
+        }
+    }
+</script>
+
+</body>
+</html>
