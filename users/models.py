@@ -25,13 +25,13 @@ class User(models.Model):
 
 
 
-class Teams(models.Model):
-    name = models.CharField(max_length=100)
-    team_lead = models.ForeignKey(User,on_delete=models.SET_NULL,null=True, related_name="leading_teams")
+# class Teams(models.Model):
+#     name = models.CharField(max_length=100)
+#     team_lead = models.ForeignKey(User,on_delete=models.SET_NULL,null=True, related_name="leading_teams")
 
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 # class TeamMember(models.Model):
 #     team = models.ForeignKey(
@@ -59,7 +59,7 @@ class Teams(models.Model):
 #         return f"{self.member.username} → {self.team.name}"
  
 
-class GitHubAccount(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    access_token = models.TextField()
-    github_user_id = models.CharField(max_length=100)
+# class GitHubAccount(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     access_token = models.TextField()
+#     github_user_id = models.CharField(max_length=100)

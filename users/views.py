@@ -93,12 +93,15 @@ def github_callback(request):
     token_res = requests.post(
         "https://github.com/login/oauth/access_token",
         headers={"Accept": "application/json"},
-        data={
+        data={  
             "client_id": GITHUB_CLIENT_ID,
             "client_secret": GITHUB_CLIENT_SECRET,
             "code": code,
         },
     )
+
+
+
 
     data = token_res.json()
     access_token = data.get("access_token")
