@@ -31,8 +31,6 @@ def users_view(request):
             password=data["password"],
         )
 
-
-
         return JsonResponse({
             "id": user.id,
             "message": "User created successfully"
@@ -43,6 +41,9 @@ def users_view(request):
             "id", "username", "email", "role"
         )
         return JsonResponse(list(users), safe=False)
+
+
+
 
 
 
@@ -63,7 +64,7 @@ def users_view(request):
 #             "id": team.id,
 #             "message": "Team created successfully"
 #         }, status=201) 
-    
+
 #     if request.method == "GET":
 
 #         team = Teams.objects.all().values(
