@@ -48,21 +48,46 @@ def users_view(request):
 @csrf_exempt
 
 def create_project(request):
-    if request.method == "POST":
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    try:
         data = json.loads(request.body)
-        user = User.objects.get(id=data["id"])
-        team = Team.objects.get(id=data["id"])
-        project  = Project.objects.create(
-            name = data["name"],
-            created_by = user,
-            team = team
+
+        user = User.objects.get(id=data["user_id"])
+        team = Team.objects.get(id=data["team_id"])
+
+        project = Project.objects.create(
+            name=data["name"],
+            created_by=user,
+            team=team
         )
-        return JsonResponse({
-            "id": project.id,
-            "message": "project created successfully"
-        }, status=201) 
 
+        return JsonResponse(
+            {
+                "id": project.id,
+                "message": "Project created successfully"
+            },
+            status=201
+        )
 
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+    except Team.DoesNotExist:
+        return JsonResponse({"error": "Team not found"}, status=404)
+
+    except KeyError as e:
+        return JsonResponse(
+            {"error": f"Missing field: {str(e)}"},
+            status=400
+        )
+
+    except Exception as e:
+        return JsonResponse(
+            {"error": "Something went wrong"},
+            status=500
+        )
 
 # @csrf_exempt
 # def create_team(request):
