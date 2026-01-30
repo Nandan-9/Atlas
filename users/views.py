@@ -1,7 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import User
+from .models import User,Project,Team
 
 
 from django.shortcuts import redirect
@@ -45,6 +45,22 @@ def users_view(request):
 
 
 
+@csrf_exempt
+
+def create_project(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        user = User.objects.get(id=data["id"])
+        team = Team.objects.get(id=data["id"])
+        project  = Project.objects.create(
+            name = data["name"],
+            created_by = user,
+            team = team
+        )
+        return JsonResponse({
+            "id": project.id,
+            "message": "project created successfully"
+        }, status=201) 
 
 
 
