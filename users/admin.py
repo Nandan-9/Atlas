@@ -7,3 +7,5 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         ("Custom Fields", {"fields": ("role",)}),
     )
+
+
