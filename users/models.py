@@ -25,6 +25,8 @@ class Team(models.Model):
         return self.name
 
 
+
+
 class Project(models.Model):
     name = models.CharField(max_length=100)
 
