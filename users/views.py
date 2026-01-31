@@ -46,7 +46,6 @@ def users_view(request):
 
 
 @csrf_exempt
-
 def create_project(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=405)
@@ -71,6 +70,38 @@ def create_project(request):
             status=201
         )
 
+    except KeyError as e:
+        return JsonResponse(
+            {"error": f"Missing field: {str(e)}"},
+            status=400
+        )
+
+    except Exception as e:
+        return JsonResponse(
+            {"error": "Something went wrong"},
+            status=500
+        )
+
+
+@csrf_exempt
+def get_all_projects(request):
+
+    if request.method != "GET":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+    
+    try:
+
+        projects = Project.objects.all().values(
+            "id",
+            "name",
+            "created_by_id",
+            "team_id"
+        )
+
+        return JsonResponse(
+            list(projects), safe=False
+        )
+    
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
@@ -89,29 +120,33 @@ def create_project(request):
             status=500
         )
 
-# @csrf_exempt
-# def create_team(request):
 
-#     print("dsdssds")
-#     if request.method == "POST":
 
-#         data = json.loads(request.body)
-#         team_lead =  User.objects.get(id=data["id"])
-#         team = Teams.objects.create(
-#             name = data["name"],
-#             team_lead = team_lead
-#         )
-#         return JsonResponse({
-#             "id": team.id,
-#             "message": "Team created successfully"
-#         }, status=201) 
 
-#     if request.method == "GET":
 
-#         team = Teams.objects.all().values(
-#             "id","name","team_lead"
-#         )
-#         return JsonResponse(list(team),safe=False)
+@csrf_exempt
+def create_team(request):
+
+    print("dsdssds")
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+        team_lead =  User.objects.get(id=data["id"])
+        team = Team.objects.create(
+            name = data["name"],
+            team_lead = team_lead
+        )
+        return JsonResponse({
+            "id": team.id,
+            "message": "Team created successfully"
+        }, status=201) 
+
+    if request.method == "GET":
+
+        team = Team.objects.all().values(
+            "id","name","team_lead"
+        )
+        return JsonResponse(list(team),safe=False)
 
 
 
