@@ -153,49 +153,58 @@ def create_team(request):
 
 
 
-# import requests
+import requests
+
+
+def get_user_info(access_token):
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Accept": "application/vnd.github+json",
+    }
+    res = requests.get("https://api.github.com/user", headers=headers)
+    res.raise_for_status()
+    return res.json()
+    
 
 
 
-# @csrf_exempt
+@csrf_exempt
 
-# def github_auth(request):
-#     params = {
-#         "client_id": GITHUB_CLIENT_ID,
-#         "redirect_uri": "http://localhost:8000/users/github/callback/",
-#         "scope": "repo workflow read:org",
-#     }
+def github_auth(request):
+    params = {
+        "client_id": GITHUB_CLIENT_ID,
+        "redirect_uri": "http://localhost:8000/users/github/callback/",
+        "scope": "repo workflow read:org",
+    }
 
-#     url = "https://github.com/login/oauth/authorize?" + urllib.parse.urlencode(params)
-#     return JsonResponse({"auth_url": url})
+    url = "https://github.com/login/oauth/authorize?" + urllib.parse.urlencode(params)
+    return JsonResponse({"auth_url": url})
 
-# def github_callback(request):
-#     code = request.GET.get("code")
+def github_callback(request):
+    code = request.GET.get("code")
 
-#     if not code:
-#         return JsonResponse({"error": "No code received"}, status=400)
+    if not code:
+        return JsonResponse({"error": "No code received"}, status=400)
 
-#     token_res = requests.post(
-#         "https://github.com/login/oauth/access_token",
-#         headers={"Accept": "application/json"},
-#         data={  
-#             "client_id": GITHUB_CLIENT_ID,
-#             "client_secret": GITHUB_CLIENT_SECRET,
-#             "code": code,
-#         },
-#     )
+    token_res = requests.post(
+        "https://github.com/login/oauth/access_token",
+        headers={"Accept": "application/json"},
+        data={  
+            "client_id": GITHUB_CLIENT_ID,
+            "client_secret": GITHUB_CLIENT_SECRET,
+            "code": code,
+        },
+    )
 
+    data = token_res.json()
+    access_token = data.get("access_token")
 
+    if not access_token:
+        return JsonResponse({"error": "Token exchange failed", "details": data}, status=400)
+    
 
+    # TEMP: store globally (MVP only)
+    with open("github_token.txt", "w") as f:
+        f.write(access_token)
 
-#     data = token_res.json()
-#     access_token = data.get("access_token")
-
-#     if not access_token:
-#         return JsonResponse({"error": "Token exchange failed", "details": data}, status=400)
-
-#     # TEMP: store globally (MVP only)
-#     with open("github_token.txt", "w") as f:
-#         f.write(access_token)
-
-#     return JsonResponse({"status": "GitHub connected successfully"})
+    return JsonResponse({"status": "GitHub connected successfully"})
