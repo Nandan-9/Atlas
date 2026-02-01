@@ -81,3 +81,5 @@ class GitHubAccount(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     access_token = models.TextField()
     github_user_id = models.CharField(max_length=100)
+    username = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=False)
